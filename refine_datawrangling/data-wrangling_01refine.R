@@ -1,7 +1,6 @@
 # Load the data
-#dataset <- read.csv(file="refine_original.csv", header=TRUE, sep=",", stringsAsFactors = FALSE)
 library(tidyverse)
-dataset <- read_csv("refine_original.csv")
+dataset <- read_csv("refine_datawrangling/refine_original.csv")
 
 # Clean up brand names: philips, akzo, van houten, and unilever
 company_clean <- tolower(dataset$company)
@@ -13,7 +12,8 @@ search_replace <- function(pattern, replacement, x) {
   }
   return(x)
 }
-company_clean <- search_replace("^a.*", "akzo", company_clean)
+#company_clean <- search_replace("^a.*", "akzo", company_clean)
+company_clean <- gsub("^a.*", "akzo", company_clean)
 company_clean <- search_replace("*.ps$", "philips", company_clean)
 company_clean <- search_replace("^u*.*r$", "unilever", company_clean)
 company_clean <- search_replace("^van\\s", "van houten", company_clean)
@@ -23,7 +23,7 @@ dataset$company <- company_clean
 dataset <- separate(dataset, "Product code / number", c("prodCode", "prodNum"), sep = "-")
 
 # Add product category, p=Smartphone, v=TV, x=Laptop, q=Tablet
-#prodCat <- rep("Smartphone", times=25)
+prodCat <- rep("product", times=25)
 for (i in 1:length(dataset$prodCode)) {
   if (dataset$prodCode[i] == "p") {
     prodCat[i] <- "Smartphone"
@@ -51,10 +51,10 @@ isVanHouten <- if_else(dataset$company == "van houten", 1, 0)
 dataset <- data.frame(dataset, isAkzo, isPhilips, isUnilever, isVanHouten)
 
 # Add binary value for product category: Smartphone, TV, Laptop, Tablet
-isSmartphone <- if_else(dataset$prodCode == "p", 1, 0)
-isTV <- if_else(dataset$prodCode == "v", 1, 0)
-isLaptop <- if_else(dataset$prodCode == "x", 1, 0)
-isTablet <- if_else(dataset$prodCode == "q", 1, 0)
-dataset <- data.frame(dataset, isSmartphone, isTV, isLaptop, isTablet)
+dataset$isSmartphone <- if_else(dataset$prodCode == "p", 1, 0)
+dataset$isTV <- if_else(dataset$prodCode == "v", 1, 0)
+dataset$isLaptop <- if_else(dataset$prodCode == "x", 1, 0)
+dataset$isTablet <- if_else(dataset$prodCode == "q", 1, 0)
+#dataset <- data.frame(dataset, isSmartphone, isTV, isLaptop, isTablet)
 
-write_csv(dataset, "refine_clean.csv")
+write_csv(dataset, "refine_datawrangling/refine_clean.csv")
