@@ -17,6 +17,7 @@
 # set the working directory
 # setwd("~/Desktop/Rstatistics")
 # setwd("C:/Users/dataclass/Desktop/Rstatistics")
+setwd("~/springboard-projects/linear_regression/")
 
 ##   You might also start by listing the files in your working directory
 
@@ -63,7 +64,7 @@ plot(sts.ex.sat)
 ##   • For example, we can use `lm' to predict SAT scores based on
 ##     per-pupal expenditures:
 
-# Fit our regression model
+# Fit our linear regression model
 sat.mod <- lm(csat ~ expense, # regression formula
               data=states.data) # data set
 # Summarize and print the results
@@ -87,13 +88,13 @@ summary(lm(csat ~ expense + percent, data = states.data))
 ##   OK, we fit our model. Now what?
 ##   • Examine the model object:
 
-class(sat.mod)
-names(sat.mod)
+class(sat.mod) # linear model object
+names(sat.mod) # fields
 methods(class = class(sat.mod))[1:9]
 
 ##   • Use function methods to get more information about the fit
 
-confint(sat.mod)
+confint(sat.mod) # Confidence Intervals for Model Parameters
 # hist(residuals(sat.mod))
 
 ## Linear Regression Assumptions
@@ -130,12 +131,24 @@ coef(summary(sat.voting.mod))
 ##   per capita (energy) from the percentage of residents living in
 ##   metropolitan areas (metro). Be sure to
 ##   1. Examine/plot the data before fitting the model
-##   2. Print and interpret the model `summary'
-##   3. `plot' the model to look for deviations from modeling assumptions
+sts.energy.sat <- subset(states.data, select = c("metro", "energy"))
+sts.green.sat <- subset(states.data, select = c("green", "energy"))
 
+##   2. Print and interpret the model `summary'
+summary(sts.energy.sat); cor(sts.energy.sat)
+
+summary(sts.green.sat); cor(sts.green.sat)
+
+##   3. `plot' the model to look for deviations from modeling assumptions
+plot(sts.energy.sat)
+plot(sts.green.sat)
+ggplot(states.data, aes(x=toxic, y=energy)) + geom_point()
 ##   Select one or more additional predictors to add to your model and
 ##   repeat steps 1-3. Is this model significantly better than the model
 ##   with /metro/ as the only predictor?
+sat.mod2 <- (lm(energy ~ metro + green + toxic, data = states.data))
+summary(sat.mod2)
+
 
 ## Interactions and factors
 ## ══════════════════════════
@@ -165,7 +178,7 @@ sat.expense.by.percent <- lm(csat ~ expense*income,
 str(states.data$region)
 states.data$region <- factor(states.data$region)
 #Add region to the model
-sat.region <- lm(csat ~ region,
+sat.region <- lm(csat ~ region, # SAT scores based on Region
                  data=states.data) 
 #Show the results
 coef(summary(sat.region)) # show regression coefficients table
@@ -183,12 +196,12 @@ anova(sat.region) # show ANOVA table
 ##   scheme using the `C' function.
 
 # print default contrasts
-contrasts(states.data$region)
+contrasts(states.data$region) # Get and Set Contrast Matrices
 # change the reference group
 coef(summary(lm(csat ~ C(region, base=4),
                 data=states.data)))
 # change the coding scheme
-coef(summary(lm(csat ~ C(region, contr.helmert),
+coef(summary(lm(csat ~ C(region, contr.helmert), # Return a matrix of contrasts
                 data=states.data)))
 
 ##   See also `?contrasts', `?contr.treatment', and `?relevel'.
@@ -200,6 +213,16 @@ coef(summary(lm(csat ~ C(region, contr.helmert),
 
 ##   1. Add on to the regression equation that you created in exercise 1 by
 ##      generating an interaction term and testing the interaction.
+sat.csat.by.high <- lm(csat ~ high*income, data=states.data) 
+summary(sat.csat.by.high)
+coef(summary(sat.csat.by.high)) # show regression coefficients table
+plot(sat.csat.by.high)
 
 ##   2. Try adding region to the model. Are there significant differences
 ##      across the four regions?
+sts.region.sat <- subset(states.data, select = c("region", "csat"))
+summary(sts.region.sat)
+sat.mod3 <- lm(csat ~ region, data=states.data)
+summary(sat.mod3)
+plot(sts.region.sat)
+
