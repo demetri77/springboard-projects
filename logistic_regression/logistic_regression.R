@@ -23,7 +23,7 @@
 ##         health objectives.
 
 ##   Load the National Health Interview Survey data:
-setwd("~/springboard-projects/logistic_regression/")
+setwd("logistic_regression/")
 NH11 <- readRDS("dataSets/NatHealth2011.rds")
 labs <- attributes(NH11)$labels
 
@@ -38,8 +38,8 @@ labs <- attributes(NH11)$labels
 str(NH11$hypev) # check stucture of hypev
 levels(NH11$hypev) # check levels of hypev
 # collapse all missing values to NA
-NH11$hypev <- factor(NH11$hypev, levels=c("2 No", "1 Yes"))
-# run our regression model, age + gender + sleep_hours + BMI
+NH11$hypev <- factor(NH11$hypev, levels=c("2 No", "1 Yes")) #~~ how does this "collapse all missing values?
+# run our regression model
 hyp.out <- glm(hypev~age_p+sex+sleep+bmi,
               data=NH11, family="binomial")
 coef(summary(hyp.out))
@@ -100,8 +100,20 @@ plot(allEffects(hyp.out))
 
 ##   1. Use glm to conduct a logistic regression to predict ever worked
 ##      (everwrk) using age (age_p) and marital status (r_maritl).
+NH11$everwrk <- factor(NH11$everwrk, levels=c("2 No", "1 Yes"))
+hyp.work <- glm(everwrk ~ age_p + r_maritl, family="binomial", NH11)
+summary(hyp.work)
+hyp.work.tab <- coef(summary(hyp.work))
+hyp.work.tab[, "Estimate"] <- exp(coef(hyp.work))
+hyp.work.tab
+
 ##   2. Predict the probability of working for each level of marital
 ##      status.
+predWrk <- with(NH11, expand.grid())
+#cbind(predWrk, predict(hyp.work, type="response", 
+#                       se.fit=TRUE, interval="confidence",
+#                       newdata=predWrk))
+predWrk <- predict(hyp.work, type="response")
 
 ##   Note that the data is not perfectly clean and ready to be modeled. You
 ##   will need to clean up at least some of the variables before fitting

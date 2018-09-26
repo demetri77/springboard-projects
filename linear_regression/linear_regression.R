@@ -17,18 +17,18 @@
 # set the working directory
 # setwd("~/Desktop/Rstatistics")
 # setwd("C:/Users/dataclass/Desktop/Rstatistics")
-setwd("~/springboard-projects/linear_regression/")
+# setwd("~/c:springboard-projects/linear_regression/")
 
 ##   You might also start by listing the files in your working directory
 
 getwd() # where am I?
-list.files("dataSets") # files in the dataSets folder
+list.files("linear_regression/dataSets") # files in the dataSets folder
 
 ## Load the states data
 ## ────────────────────────
 
 # read the states data
-states.data <- readRDS("dataSets/states.rds") 
+states.data <- readRDS("linear_regression/dataSets/states.rds") 
 #get labels
 states.info <- data.frame(attributes(states.data)[c("names", "var.labels")])
 #look at last few labels
@@ -225,4 +225,3 @@ summary(sts.region.sat)
 sat.mod3 <- lm(csat ~ region, data=states.data)
 summary(sat.mod3)
 plot(sts.region.sat)
-
